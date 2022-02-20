@@ -13,16 +13,29 @@ namespace DaySleeper
 
         const string PLUGIN_ID = "com.onemorelvl.xaviorr.daysleeper";
         const string PLUGIN_NAME = "DaySleeper";
-        const string PLUGIN_VERSION = "1.1.0";
+        const string PLUGIN_VERSION = "1.2.0";
 
         private Harmony harmony;
         private static Assembly assembly;
 
         private static ConfigEntry<bool> modEnabled;
+        private static ConfigEntry<bool> sleepAtNight;
+        private static ConfigEntry<bool> sleepAtDay;
+        private static ConfigEntry<bool> sleepTillSix;
+        private static ConfigEntry<bool> sleepWhileWet;
+        private static ConfigEntry<bool> sleepWhileExposed;
+
 
         public void Awake()
         {
             modEnabled = Config.Bind<bool>("General", "Enabled", true, "Enable this mod bitch!");
+            sleepWhileWet = Config.Bind<bool>("General", "Sleep Wet", false, "Go to sleep while wet");
+            sleepWhileExposed = Config.Bind<bool>("General", "Sleep Exposed", false, "Sleep on a bed without a roof");
+            sleepAtNight = Config.Bind<bool>("Sleep Options [Only choose one]", "Sleep at Night", false, "Sleep at any time and Wake up at 6am");
+            sleepAtDay = Config.Bind<bool>("Sleep Options [Only choose one]", "Sleep During the day", false, "Sleep at any time and wake up at 6pm");
+            sleepTillSix = Config.Bind<bool>("Sleep Options [Only choose one]", "Sleep until the next 6 ", true, "Sleep anytime and wake up at the next 6 o'clock");
+            
+
 
             if (!modEnabled.Value)
             {
@@ -82,20 +95,26 @@ namespace DaySleeper
                             __result = false;
                             return false;
                         }
-                        if (!__instance.CheckExposure(human2))
+                        if (!sleepWhileExposed.Value)
                         {
-                            __result = false;
-                            return false;
+                            if (!__instance.CheckExposure(human2))
+                            {
+                                __result = false;
+                                return false;
+                            }
                         }
                         if (!__instance.CheckFire(human2))
                         {
                             __result = false;
                             return false;
                         }
-                        if (!__instance.CheckWet(human2))
+                        if (!sleepWhileWet.Value)
                         {
-                            __result = false;
-                            return false;
+                            if (!__instance.CheckWet(human2))
+                            {
+                                __result = false;
+                                return false;
+                            }
                         }
                         human.AttachStart(__instance.m_spawnPoint, __instance.gameObject, hideWeapons: true, isBed: true, onShip: false, "attach_bed", new Vector3(0f, 0.5f, 0f));
                         __result = false;
@@ -155,8 +174,32 @@ namespace DaySleeper
         {
             public static bool Prefix(EnvMan __instance, ref double __result, int day)
             {
-                __result = (float)(day * __instance.m_dayLengthSec) + (float)__instance.m_dayLengthSec * 0.85f;
-                return false;
+                if (sleepAtNight.Value)
+                {
+                    __result = (float)(day * __instance.m_dayLengthSec) + (float)__instance.m_dayLengthSec * 0.85f;
+                    return false;
+
+                }
+
+                if(sleepAtDay.Value)
+                {
+                    __result = (float)(day * __instance.m_dayLengthSec) + (float)__instance.m_dayLengthSec * 0.15f;
+                    return false;
+
+                }
+
+                if (sleepTillSix.Value)
+                {
+                    if (__instance.IsDay())
+                    {
+                        __result = (float)(day * __instance.m_dayLengthSec) + (float)__instance.m_dayLengthSec * 0.85f;
+                        return false;
+                    }
+                    __result = (float)(day * __instance.m_dayLengthSec) + (float)__instance.m_dayLengthSec * 0.15f;
+                    return false;
+                }
+
+                return true;
             }
 
         }
