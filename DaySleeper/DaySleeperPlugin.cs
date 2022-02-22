@@ -28,14 +28,13 @@ namespace DaySleeper
 
         public void Awake()
         {
-            modEnabled = Config.Bind<bool>("General", "Enabled", true, "Enable this mod bitch!");
-            sleepWhileWet = Config.Bind<bool>("General", "Sleep Wet", false, "Go to sleep while wet");
-            sleepWhileExposed = Config.Bind<bool>("General", "Sleep Exposed", false, "Sleep on a bed without a roof");
-            sleepAtNight = Config.Bind<bool>("Sleep Options [Only choose one]", "Sleep at Night", false, "Sleep at any time and Wake up at 6am");
-            sleepAtDay = Config.Bind<bool>("Sleep Options [Only choose one]", "Sleep During the day", false, "Sleep at any time and wake up at 6pm");
-            sleepTillSix = Config.Bind<bool>("Sleep Options [Only choose one]", "Sleep until the next 6 ", true, "Sleep anytime and wake up at the next 6 o'clock");
+            modEnabled = Config.Bind("General", "Enabled", true, "Enable this mod bitch!");
+            sleepTillSix = Config.Bind("General", "Sleep until the next 6", true, "Sleep anytime and wake up at the next 6 o'clock");
+            sleepAtNight = Config.Bind("General", "Sleep at Night", false, "Sleep at any time and Wake up at 6am");
+            sleepAtDay = Config.Bind("General", "Sleep during the day", false, "Sleep at any time and wake up at 6pm");
+            sleepWhileWet = Config.Bind("General", "Sleep Wet", false, "Go to sleep while wet");
+            sleepWhileExposed = Config.Bind("General", "Sleep Exposed", false, "Sleep on a bed without a roof");
             
-
 
             if (!modEnabled.Value)
             {
