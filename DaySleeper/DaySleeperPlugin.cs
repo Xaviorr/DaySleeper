@@ -11,7 +11,7 @@ namespace DaySleeper
     public class DaySleeperPlugin : BaseUnityPlugin
     {
 
-        const string PLUGIN_ID = "com.onemorelvl.xaviorr.daysleeper";
+        const string PLUGIN_ID = "com.onemorelvl.daysleeper";
         const string PLUGIN_NAME = "DaySleeper";
         const string PLUGIN_VERSION = "1.2.0";
 
@@ -29,12 +29,13 @@ namespace DaySleeper
         public void Awake()
         {
             modEnabled = Config.Bind("General", "Enabled", true, "Enable this mod bitch!");
-            sleepTillSix = Config.Bind("General", "Sleep until the next 6", true, "Sleep anytime and wake up at the next 6 o'clock");
-            sleepAtNight = Config.Bind("General", "Sleep at Night", false, "Sleep at any time and Wake up at 6am");
-            sleepAtDay = Config.Bind("General", "Sleep during the day", false, "Sleep at any time and wake up at 6pm");
             sleepWhileWet = Config.Bind("General", "Sleep Wet", false, "Go to sleep while wet");
             sleepWhileExposed = Config.Bind("General", "Sleep Exposed", false, "Sleep on a bed without a roof");
-            
+            sleepTillSix = Config.Bind("SleepOptions Only Choose One", "Sleep until the next 6", true, "Sleep anytime and wake up at the next 6 o'clock");
+            sleepAtNight = Config.Bind("SleepOptions Only Choose One", "Sleep at Night", false, "Sleep at any time and Wake up at 6am");
+            sleepAtDay = Config.Bind("SleepOptions Only Choose One", "Sleep during the day", false, "Sleep at any time and wake up at 6pm");
+
+
 
             if (!modEnabled.Value)
             {
@@ -68,10 +69,14 @@ namespace DaySleeper
                 if (owner == 0L)
                 {
                     Debug.Log("Has no creator");
-                    if (!__instance.CheckExposure(human2))
+                    if (!sleepWhileExposed.Value)
                     {
-                        __result = false;
-                        return false;
+                        if (!__instance.CheckExposure(human2))
+                        {
+                            __result = false;
+                            return false;
+                        }
+
                     }
                     __instance.SetOwner(playerID, Game.instance.GetPlayerProfile().GetName());
                     Game.instance.GetPlayerProfile().SetCustomSpawnPoint(__instance.GetSpawnPoint());
@@ -120,10 +125,14 @@ namespace DaySleeper
                         return false;
                     }
                     Debug.Log("Not current spawn point");
-                    if (!__instance.CheckExposure(human2))
+                    if (!sleepWhileExposed.Value)
                     {
-                        __result = false;
-                        return false;
+                        if (!__instance.CheckExposure(human2))
+                        {
+                            __result = false;
+                            return false;
+                        }
+
                     }
                     Game.instance.GetPlayerProfile().SetCustomSpawnPoint(__instance.GetSpawnPoint());
                     human.Message(MessageHud.MessageType.Center, "$msg_spawnpointset");
@@ -175,14 +184,14 @@ namespace DaySleeper
             {
                 if (sleepAtNight.Value)
                 {
-                    __result = (float)(day * __instance.m_dayLengthSec) + (float)__instance.m_dayLengthSec * 0.85f;
+                    __result = (float)(day * __instance.m_dayLengthSec) + (float)__instance.m_dayLengthSec * 0.15f;
                     return false;
 
                 }
 
                 if(sleepAtDay.Value)
                 {
-                    __result = (float)(day * __instance.m_dayLengthSec) + (float)__instance.m_dayLengthSec * 0.15f;
+                    __result = (float)(day * __instance.m_dayLengthSec) + (float)__instance.m_dayLengthSec * 0.85f;
                     return false;
 
                 }
