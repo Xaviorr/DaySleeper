@@ -13,7 +13,7 @@ namespace DaySleeper
 
         const string PLUGIN_ID = "com.onemorelvl.daysleeper";
         const string PLUGIN_NAME = "DaySleeper";
-        const string PLUGIN_VERSION = "1.2.0";
+        const string PLUGIN_VERSION = "1.2.1";
 
         private Harmony harmony;
         private static Assembly assembly;
